@@ -2,7 +2,7 @@
 using namespace std;
 
 void badSwap(int x, int y);
-void goodSwap(int *const pX, int *const pY);
+void goodSwap(int *const pX, int *const pY); // 常量指针，指向地址固定，指向的值可修改
 
 int main()
 {

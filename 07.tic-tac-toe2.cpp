@@ -27,17 +27,17 @@ void announceWinner(char winner, char computer, char human);
 // main function
 int main()
 {
-    int move;
     const int NUM_SQUARES = 9;
     vector<char> board(NUM_SQUARES, EMPTY);
 
     instructions();
     char human = humanPiece();
     char computer = opponent(human);
-    char turn = X;
     displayBoard(&board);
 
-    while (winner(&board) == NO_ONE)
+    char turn = X;
+    int move;
+    do
     {
         if (turn == human)
         {
@@ -49,16 +49,16 @@ int main()
             move = computerMove(board, computer);
             board[move] = computer;
         }
+
         displayBoard(&board);
         turn = opponent(turn);
-    }
+    } while (winner(&board) == NO_ONE);
 
     announceWinner(winner(&board), computer, human);
 
     return 0;
 }
 
-// functions
 void instructions()
 {
     cout << "Welcome to the ultimate man-machine showdown: Tic-Tac-Toe.\n";
@@ -118,13 +118,9 @@ char humanPiece()
 char opponent(char piece)
 {
     if (piece == X)
-    {
         return O;
-    }
     else
-    {
         return X;
-    }
 }
 
 void displayBoard(const vector<char> *const pBoard)
@@ -191,75 +187,59 @@ int humanMove(const vector<char> *const pBoard, char human)
 
 int computerMove(vector<char> board, char computer)
 {
-    unsigned int move = 0;
-    bool found = false;
+    int out = -1;
 
-    // if computer can win on next move, that�s the move to make
-    while (!found && move < board.size())
+    const unsigned NUM = board.size();
+    char human = opponent(computer);
+    const int BEST_MOVES[NUM] = {4, 0, 2, 6, 8, 1, 3, 5, 7};
+
+    // 遍历查找计算机能一步获胜的方格位置
+    for (unsigned move = 0; move < NUM; move++)
     {
-        if (isLegal(move, &board))
+        if (isLegal(move, &board)) // 当前位置为空
         {
-            // try move
+            // 尝试移动
             board[move] = computer;
-            // test for winner
-            found = winner(&board) == computer;
-            // undo move
+            // 测试计算机能否获胜
+            if (winner(&board) == computer)
+            {
+                out = move;
+                goto exportation;
+            }
+            // 撤销移动
             board[move] = EMPTY;
         }
-
-        if (!found)
-        {
-            ++move;
-        }
     }
 
-    // otherwise, if opponent can win on next move, that's the move to make
-    if (!found)
+    // 遍历查找人类能一步获胜的方格位置
+    for (unsigned move = 0; move < NUM; move++)
     {
-        move = 0;
-        char human = opponent(computer);
-
-        while (!found && move < board.size())
+        if (isLegal(move, &board)) // 当前位置为空
         {
-            if (isLegal(move, &board))
+            // 尝试移动
+            board[move] = human;
+            // 测试人类能否获胜
+            if (winner(&board) == human)
             {
-                // try move
-                board[move] = human;
-                // test for winner
-                found = winner(&board) == human;
-                // undo move
-                board[move] = EMPTY;
+                out = move;
+                goto exportation;
             }
-
-            if (!found)
-            {
-                ++move;
-            }
+            // 撤销移动
+            board[move] = EMPTY;
         }
     }
 
-    // otherwise, moving to the best open square is the move to make
-    if (!found)
-    {
-        move = 0;
-        unsigned int i = 0;
-
-        const int BEST_MOVES[] = {4, 0, 2, 6, 8, 1, 3, 5, 7};
-        // pick best open square
-        while (!found && i < board.size())
+    // 中心》四边》四角
+    for (unsigned move = 0; move < NUM; move++)
+        if (isLegal(BEST_MOVES[move], &board))
         {
-            move = BEST_MOVES[i];
-            if (isLegal(move, &board))
-            {
-                found = true;
-            }
-
-            ++i;
+            out = BEST_MOVES[move];
+            break;
         }
-    }
 
-    cout << "I shall take square number " << move << endl;
-    return move;
+exportation:
+    cout << "I shall take square number " << out << endl;
+    return out;
 }
 
 void announceWinner(char winner, char computer, char human)

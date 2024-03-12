@@ -6,11 +6,11 @@ class Critter
 public:
     int m_Hunger;
 
-    Critter(int hunger = 0); // constructor prototype
+    Critter(int hunger = 0); // 声明构造函数，提供默认参数
     void Greet();
 };
 
-Critter::Critter(int hunger) // constructor definition
+Critter::Critter(int hunger) // 定义构造函数
 {
     cout << "A new critter has been born!" << endl;
     m_Hunger = hunger;

@@ -3,6 +3,8 @@
 #include <vector>
 using namespace std;
 
+// 指向常量的常量指针
+// 指向地址和指向的值都不能修改
 void display(const vector<string> *const pInventory);
 
 int main()
@@ -23,9 +25,6 @@ int main()
 void display(const vector<string> *const pInventory)
 {
     cout << "Your items:\n";
-    for (vector<string>::const_iterator iter = (*pInventory).begin();
-         iter != (*pInventory).end(); ++iter)
-    {
+    for (vector<string>::const_iterator iter = (*pInventory).begin(); iter != (*pInventory).end(); ++iter)
         cout << *iter << endl;
-    }
 }

@@ -27,15 +27,11 @@ int main()
 void increase(int *const array, const int NUM_ELEMENTS)
 {
     for (int i = 0; i < NUM_ELEMENTS; ++i)
-    {
         array[i] += 500;
-    }
 }
 
 void display(const int *const array, const int NUM_ELEMENTS)
 {
     for (int i = 0; i < NUM_ELEMENTS; ++i)
-    {
         cout << array[i] << endl;
-    }
 }

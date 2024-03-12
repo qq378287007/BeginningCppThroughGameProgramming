@@ -12,12 +12,13 @@ private: // begin private section
     int m_Hunger;
 };
 
-Critter::Critter(int hunger) : m_Hunger(hunger)
+Critter::Critter(int hunger)
+    : m_Hunger(hunger)
 {
     cout << "A new critter has been born!" << endl;
 }
 
-int Critter::GetHunger() const
+int Critter::GetHunger() const // const不能修改非静态数据成员值，不能调用非常量成员函数
 {
     return m_Hunger;
 }

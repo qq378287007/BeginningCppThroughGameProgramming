@@ -50,6 +50,7 @@ int main()
             move = computerMove(board, computer); // 计算机移动
             board[move] = computer;               // 下棋
         }
+
         displayBoard(board);   // 显示棋盘
         turn = opponent(turn); // 轮次交替
     }
@@ -244,7 +245,7 @@ int computerMove(vector<char> board, char computer)
     const int BEST_MOVES[NUM] = {4, 0, 2, 6, 8, 1, 3, 5, 7};
     for (unsigned move = 0; move < NUM; move++)
         if (isLegal(BEST_MOVES[move], board))
-            return move;
+            return BEST_MOVES[move];
 
     return -1; // 不可能
 }

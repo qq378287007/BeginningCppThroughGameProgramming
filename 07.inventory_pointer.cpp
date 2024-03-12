@@ -3,8 +3,8 @@
 #include <vector>
 using namespace std;
 
-//returns a pointer to a string element
-string* ptrToElement(vector<string>* const pVec, int i);
+// returns a pointer to a string element
+string *ptrToElement(vector<string> *const pVec, int i);
 
 int main()
 {
@@ -13,23 +13,23 @@ int main()
     inventory.push_back("armor");
     inventory.push_back("shield");
 
-    //displays string object that the returned pointer points to
-    cout << "Sending the object pointed to by returned pointer to cout:\n";       
+    // displays string object that the returned pointer points to
+    cout << "Sending the object pointed to by returned pointer to cout:\n";
     cout << *(ptrToElement(&inventory, 0)) << "\n\n";
 
-    //assigns one pointer to another -- inexpensive assignment
+    // assigns one pointer to another -- inexpensive assignment
     cout << "Assigning the returned pointer to another pointer.\n";
-    string* pStr = ptrToElement(&inventory, 1);
+    string *pStr = ptrToElement(&inventory, 1);
     cout << "Sending the object pointed to by new pointer to cout:\n";
     cout << *pStr << "\n\n";
-    
-    //copies a string object -- expensive assignment
+
+    // copies a string object -- expensive assignment
     cout << "Assigning object pointed to by pointer to a string object.\n";
-    string str = *(ptrToElement(&inventory, 2));  
+    string str = *(ptrToElement(&inventory, 2));
     cout << "Sending the new string object to cout:\n";
     cout << str << "\n\n";
-    
-    //altering the string object through a returned pointer
+
+    // altering the string object through a returned pointer
     cout << "Altering an object through a returned pointer.\n";
     *pStr = "Healing Potion";
     cout << "Sending the altered object to cout:\n";
@@ -38,9 +38,16 @@ int main()
     return 0;
 }
 
-string* ptrToElement(vector<string>* const pVec, int i)
+string *ptrToElement(vector<string> *const pVec, int i)
 {
-    //returns address of the string in position i of vector that pVec points to
-    return &((*pVec)[i]);  
+    // returns address of the string in position i of vector that pVec points to
+    return &((*pVec)[i]);
 }
 
+// 返回指针，超出作用域范围对象（局部变量指针），函数结束后不存在，野指针
+string *badPointer()
+{
+    string local = "This string will cease to exist once the function ends.";
+    string *pLocal = &local;
+    return pLocal;
+}
