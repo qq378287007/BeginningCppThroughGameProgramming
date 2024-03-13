@@ -10,10 +10,11 @@ public:
     string GetName() const;
 
 private:
-    string m_Name;
+    string m_Name; // 对象包含关系
 };
 
-Critter::Critter(const string &name) : m_Name(name)
+Critter::Critter(const string &name)
+    : m_Name(name)
 {
 }
 
@@ -45,12 +46,8 @@ void Farm::Add(const Critter &aCritter)
 
 void Farm::RollCall() const
 {
-    for (vector<Critter>::const_iterator iter = m_Critters.begin();
-         iter != m_Critters.end();
-         ++iter)
-    {
+    for (vector<Critter>::const_iterator iter = m_Critters.begin(); iter != m_Critters.end(); ++iter)
         cout << iter->GetName() << " here.\n";
-    }
 }
 
 int main()

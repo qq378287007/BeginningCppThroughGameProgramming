@@ -5,7 +5,7 @@
 #include <ctime>
 using namespace std;
 
-class Card
+class Card // 扑克牌
 {
 public:
     enum rank
@@ -32,26 +32,22 @@ public:
         SPADES
     };
 
-    Card(rank r = ACE, suit s = SPADES, bool ifu = true) : m_Rank(r), m_Suit(s), m_IsFaceUp(ifu) {}
+    Card(rank r = ACE, suit s = SPADES, bool ifu = true)
+        : m_Rank(r), m_Suit(s), m_IsFaceUp(ifu) {}
 
-    // returns the value of a card, 1 - 11
-    int GetValue() const
+    int GetValue() const // 获取点数, 0 - 11
     {
-        // if a card is face down, its value is 0
-        int value = 0;
+        int value = 0; // 牌朝下为0
         if (m_IsFaceUp)
         {
-            // value is number showing on card
             value = m_Rank;
-            // value is 10 for face cards
-            if (value > 10)
+            if (value > 10) // 人脸牌，点数为10
                 value = 10;
         }
         return value;
     }
 
-    // flips a card; if face up, becomes face down and vice versa
-    void Flip()
+    void Flip() // 翻牌
     {
         m_IsFaceUp = !m_IsFaceUp;
     }
@@ -59,12 +55,12 @@ public:
     friend ostream &operator<<(ostream &os, const Card &aCard);
 
 private:
-    rank m_Rank;
-    suit m_Suit;
-    bool m_IsFaceUp;
+    rank m_Rank;     // 大小
+    suit m_Suit;     // 花色
+    bool m_IsFaceUp; // 是否正面朝上
 };
 
-class Hand
+class Hand // 持有牌
 {
 public:
     Hand()
@@ -77,53 +73,38 @@ public:
         Clear();
     }
 
-    // adds a card to the hand
     void Add(Card *pCard)
     {
         m_Cards.push_back(pCard);
     }
 
-    // clears hand of all cards
     void Clear()
     {
-        // iterate through vector, freeing all memory on the heap
-        vector<Card *>::iterator iter = m_Cards.begin();
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-        {
+        for (vector<Card *>::iterator iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
             delete *iter;
-            *iter = 0;
-        }
-        // clear vector of pointers
         m_Cards.clear();
     }
 
-    // gets hand total value, intelligently treats aces as 1 or 11
-    int GetTotal() const
+    int GetTotal() const // 获取牌的最大点数，aces取1或11
     {
-        // if no cards in hand, return 0
-        if (m_Cards.empty())
+        if (m_Cards.empty() || m_Cards[0]->GetValue() == 0) // 无牌或者牌朝下
             return 0;
 
-        // if a first card has value of 0, then card is face down; return 0
-        if (m_Cards[0]->GetValue() == 0)
-            return 0;
-
-        // add up card values, treat each Ace as 1
-        int total = 0;
-        vector<Card *>::const_iterator iter;
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
+        int total = 0; // 所有牌点数加起来，假定Ace点数为1
+        for (vector<Card *>::const_iterator iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
             total += (*iter)->GetValue();
 
-        // determine if hand contains an Ace
-        bool containsAce = false;
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-            if ((*iter)->GetValue() == Card::ACE)
-                containsAce = true;
-
-        // if hand contains Ace and total is low enough, treat Ace as 11
-        if (containsAce && total <= 11)
-            // add only 10 since we've already added 1 for the Ace
-            total += 10;
+        if (total <= 11) // 点数和够低，Ace才可能取11
+        {
+            for (vector<Card *>::const_iterator iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
+            {
+                if ((*iter)->GetValue() == Card::ACE) // 是否存在Ace
+                {
+                    total += 10; // 1变11，增加10
+                    break;
+                }
+            }
+        }
 
         return total;
     }
@@ -132,7 +113,7 @@ protected:
     vector<Card *> m_Cards;
 };
 
-class GenericPlayer : public Hand
+class GenericPlayer : public Hand // 一般玩家
 {
     friend ostream &operator<<(ostream &os, const GenericPlayer &aGenericPlayer);
 
@@ -160,7 +141,7 @@ protected:
     string m_Name;
 };
 
-class Player : public GenericPlayer
+class Player : public GenericPlayer // 人类
 {
 public:
     Player(const string &name = "") : GenericPlayer(name) {}
@@ -195,7 +176,7 @@ public:
     }
 };
 
-class House : public GenericPlayer
+class House : public GenericPlayer // 计算机
 {
 public:
     House(const string &name = "House") : GenericPlayer(name) {}
@@ -218,7 +199,7 @@ public:
     }
 };
 
-class Deck : public Hand
+class Deck : public Hand // 堆牌，洗牌和发牌
 {
 public:
     Deck()
@@ -276,7 +257,7 @@ public:
     }
 };
 
-class Game
+class Game // 游戏
 {
 public:
     Game(const vector<string> &names)
@@ -357,11 +338,9 @@ private:
     vector<Player> m_Players;
 };
 
-// overloads << operator so Card object can be sent to cout
 ostream &operator<<(ostream &os, const Card &aCard)
 {
-    const string RANKS[] = {"0", "A", "2", "3", "4", "5", "6", "7", "8", "9",
-                            "10", "J", "Q", "K"};
+    const string RANKS[] = {"0", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};
     const string SUITS[] = {"c", "d", "h", "s"};
 
     if (aCard.m_IsFaceUp)
@@ -372,7 +351,6 @@ ostream &operator<<(ostream &os, const Card &aCard)
     return os;
 }
 
-// overloads << operator so a GenericPlayer object can be sent to cout
 ostream &operator<<(ostream &os, const GenericPlayer &aGenericPlayer)
 {
     os << aGenericPlayer.m_Name << ":\t";

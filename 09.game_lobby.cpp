@@ -15,7 +15,8 @@ private:
     Player *m_pNext; // Pointer to next player in list
 };
 
-Player::Player(const string &name) : m_Name(name), m_pNext(nullptr)
+Player::Player(const string &name)
+    : m_Name(name), m_pNext(nullptr)
 {
 }
 
@@ -49,7 +50,8 @@ private:
     Player *m_pHead;
 };
 
-Lobby::Lobby() : m_pHead(0)
+Lobby::Lobby()
+    : m_pHead(nullptr)
 {
 }
 
@@ -67,7 +69,7 @@ void Lobby::AddPlayer()
     Player *pNewPlayer = new Player(name);
 
     // if list is empty, make head of list this new player
-    if (m_pHead == 0)
+    if (m_pHead == nullptr)
     {
         m_pHead = pNewPlayer;
     }
@@ -75,17 +77,15 @@ void Lobby::AddPlayer()
     else
     {
         Player *pIter = m_pHead;
-        while (pIter->GetNext() != 0)
-        {
+        while (pIter->GetNext() != nullptr)
             pIter = pIter->GetNext();
-        }
         pIter->SetNext(pNewPlayer);
     }
 }
 
 void Lobby::RemovePlayer()
 {
-    if (m_pHead == 0)
+    if (m_pHead == nullptr)
     {
         cout << "The game lobby is empty.  No one to remove!\n";
     }
@@ -99,10 +99,8 @@ void Lobby::RemovePlayer()
 
 void Lobby::Clear()
 {
-    while (m_pHead != 0)
-    {
+    while (m_pHead != nullptr)
         RemovePlayer();
-    }
 }
 
 ostream &operator<<(ostream &os, const Lobby &aLobby)
@@ -110,13 +108,13 @@ ostream &operator<<(ostream &os, const Lobby &aLobby)
     Player *pIter = aLobby.m_pHead;
 
     os << "\nHere's who's in the game lobby:\n";
-    if (pIter == 0)
+    if (pIter == nullptr)
     {
         os << "The lobby is empty.\n";
     }
     else
     {
-        while (pIter != 0)
+        while (pIter != nullptr)
         {
             os << pIter->GetName() << endl;
             pIter = pIter->GetNext();

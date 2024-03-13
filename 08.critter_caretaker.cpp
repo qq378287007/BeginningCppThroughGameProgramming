@@ -10,14 +10,15 @@ public:
     void Play(int fun = 4);
 
 private:
-    int m_Hunger;
-    int m_Boredom;
+    int m_Hunger;  // 饥饿程度
+    int m_Boredom; // 厌倦程度
 
     int GetMood() const;
     void PassTime(int time = 1);
 };
 
-Critter::Critter(int hunger, int boredom) : m_Hunger(hunger), m_Boredom(boredom)
+Critter::Critter(int hunger, int boredom)
+    : m_Hunger(hunger), m_Boredom(boredom)
 {
 }
 
@@ -38,21 +39,13 @@ void Critter::Talk()
 
     int mood = GetMood();
     if (mood > 15)
-    {
         cout << "mad.\n";
-    }
     else if (mood > 10)
-    {
         cout << "frustrated.\n";
-    }
     else if (mood > 5)
-    {
         cout << "okay.\n";
-    }
     else
-    {
         cout << "happy.\n";
-    }
 
     PassTime();
 }
@@ -63,9 +56,7 @@ void Critter::Eat(int food)
 
     m_Hunger -= food;
     if (m_Hunger < 0)
-    {
         m_Hunger = 0;
-    }
 
     PassTime();
 }
@@ -76,9 +67,7 @@ void Critter::Play(int fun)
 
     m_Boredom -= fun;
     if (m_Boredom < 0)
-    {
         m_Boredom = 0;
-    }
 
     PassTime();
 }

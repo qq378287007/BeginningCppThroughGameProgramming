@@ -11,7 +11,8 @@ protected:
     int m_Damage;
 };
 
-Enemy::Enemy() : m_Damage(10)
+Enemy::Enemy()
+    : m_Damage(10)
 {
 }
 
@@ -30,7 +31,8 @@ private:
     int m_DamageMultiplier;
 };
 
-Boss::Boss() : m_DamageMultiplier(3)
+Boss::Boss()
+    : m_DamageMultiplier(3)
 {
 }
 

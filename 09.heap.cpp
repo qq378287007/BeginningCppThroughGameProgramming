@@ -7,7 +7,7 @@ void leak2();     // creates another memory leak
 
 int main()
 {
-    int *pHeap = new int;
+    int *pHeap = new int;//new运算符
     *pHeap = 10;
     cout << "*pHeap: " << *pHeap << "\n\n";
 
@@ -15,7 +15,7 @@ int main()
     cout << "*pHeap2: " << *pHeap2 << "\n\n";
 
     cout << "Freeing memory pointed to by pHeap.\n\n";
-    delete pHeap;
+    delete pHeap;//显示地释放
 
     cout << "Freeing memory pointed to by pHeap2.\n\n";
     delete pHeap2;
@@ -29,7 +29,7 @@ int main()
 
 int *intOnHeap()
 {
-    int *pTemp = new int(20);
+    int *pTemp = new int(20);//分配同时初始化
     return pTemp;
 }
 

@@ -10,7 +10,8 @@ public:
     void Attack() const;
 };
 
-Enemy::Enemy() : m_Damage(10)
+Enemy::Enemy()
+    : m_Damage(10)
 {
 }
 
@@ -19,7 +20,7 @@ void Enemy::Attack() const
     cout << "Attack inflicts " << m_Damage << " damage points!\n";
 }
 
-class Boss : public Enemy
+class Boss : public Enemy//基类派生，构造、析构、拷贝构造、拷贝赋值运算符未被继承
 {
 public:
     int m_DamageMultiplier;
@@ -28,7 +29,8 @@ public:
     void SpecialAttack() const;
 };
 
-Boss::Boss() : m_DamageMultiplier(3)
+Boss::Boss()
+    : m_DamageMultiplier(3)
 {
 }
 

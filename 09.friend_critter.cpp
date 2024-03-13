@@ -4,7 +4,7 @@ using namespace std;
 
 class Critter
 {
-    // make following global functions friends of the Critter class
+    // 友元函数
     friend void Peek(const Critter &aCritter);
     friend ostream &operator<<(ostream &os, const Critter &aCritter);
 
@@ -15,7 +15,8 @@ private:
     string m_Name;
 };
 
-Critter::Critter(const string &name) : m_Name(name)
+Critter::Critter(const string &name)
+    : m_Name(name)
 {
 }
 
@@ -35,14 +36,12 @@ int main()
     return 0;
 }
 
-// global friend function that can access all of a Critter object's members
 void Peek(const Critter &aCritter)
 {
     cout << aCritter.m_Name << endl;
 }
 
-// global friend function that can access all of Critter object's members
-// overloads the << operator so you can send a Critter object to cout
+// 运算符重载
 ostream &operator<<(ostream &os, const Critter &aCritter)
 {
     os << "Critter Object - m_Name: " << aCritter.m_Name;

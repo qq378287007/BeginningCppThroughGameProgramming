@@ -5,14 +5,15 @@ class Enemy
 {
 public:
     Enemy(int damage = 10);
-    void virtual Taunt() const;  // made virtual to be overridden
-    void virtual Attack() const; // made virtual to be overridden
+    virtual void Taunt() const;  // 声明虚基类成员函数
+    virtual void Attack() const; // 重写函数声明成虚函数
 
 private:
     int m_Damage;
 };
 
-Enemy::Enemy(int damage) : m_Damage(damage)
+Enemy::Enemy(int damage)
+    : m_Damage(damage)
 {
 }
 
@@ -30,12 +31,14 @@ class Boss : public Enemy
 {
 public:
     Boss(int damage = 30);
-    void virtual Taunt() const;  // optional use of keyword virtual
-    void virtual Attack() const; // optional use of keyword virtual
+    virtual void Taunt() const;           // virtual可省略
+    virtual void Attack() const override; // override建议增加
 };
 
-Boss::Boss(int damage) : Enemy(damage) // call base class constructor with argument
+Boss::Boss(int damage)
+    : Enemy(damage) // 调用基类构造函数
 {
+    cout << "damage in Boss(int damage): " << damage << endl;
 }
 
 void Boss::Taunt() const // override base class member function
@@ -45,7 +48,7 @@ void Boss::Taunt() const // override base class member function
 
 void Boss::Attack() const // override base class member function
 {
-    Enemy::Attack(); // call base class member function
+    Enemy::Attack(); // 调用基类成员函数
     cout << " And laughs heartily at you.\n";
 }
 

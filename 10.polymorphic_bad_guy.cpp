@@ -21,7 +21,7 @@ Enemy::~Enemy()
 {
     cout << "In Enemy destructor, deleting m_pDamage.\n";
     delete m_pDamage;
-    m_pDamage = 0;
+    m_pDamage = nullptr;
 }
 
 void Enemy::Attack() const
@@ -49,7 +49,7 @@ Boss::~Boss()
 {
     cout << "In Boss destructor, deleting m_pMultiplier.\n";
     delete m_pMultiplier;
-    m_pMultiplier = 0;
+    m_pMultiplier = nullptr;
 }
 
 void Boss::Attack() const
@@ -61,12 +61,12 @@ void Boss::Attack() const
 int main()
 {
     cout << "Calling Attack() on Boss object through pointer to Enemy:\n";
-    Enemy *pBadGuy = new Boss();
+    Enemy *pBadGuy = new Boss();//基类指针指向派生类
     pBadGuy->Attack();
 
     cout << "\n\nDeleting pointer to Enemy:\n";
     delete pBadGuy;
-    pBadGuy = 0;
+    pBadGuy = nullptr;
 
     return 0;
 }
