@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <random>
+#include <chrono>
 #include <ctime>
 using namespace std;
 
@@ -118,20 +120,18 @@ class GenericPlayer : public Hand // 一般玩家
     friend ostream &operator<<(ostream &os, const GenericPlayer &aGenericPlayer);
 
 public:
-    GenericPlayer(const string &name = "") : m_Name(name) {}
+    GenericPlayer(const string &name = "")
+        : m_Name(name) {}
 
     virtual ~GenericPlayer() {}
 
-    // indicates whether or not generic player wants to keep hitting
-    virtual bool IsHitting() const = 0;
+    virtual bool IsHitting() const = 0; // 是否要牌
 
-    // returns whether generic player has busted - has a total greater than 21
     bool IsBusted() const
     {
         return GetTotal() > 21;
     }
 
-    // announces that the generic player busts
     void Bust() const
     {
         cout << m_Name << " busts.\n";
@@ -144,11 +144,11 @@ protected:
 class Player : public GenericPlayer // 人类
 {
 public:
-    Player(const string &name = "") : GenericPlayer(name) {}
+    Player(const string &name = "")
+        : GenericPlayer(name) {}
 
     virtual ~Player() {}
 
-    // returns whether or not the player wants another hit
     virtual bool IsHitting() const
     {
         cout << m_Name << ", do you want a hit? (Y/N): ";
@@ -157,19 +157,14 @@ public:
         return (response == 'y' || response == 'Y');
     }
 
-    // announces that the player wins
     void Win() const
     {
         cout << m_Name << " wins.\n";
     }
-
-    // announces that the player loses
     void Lose() const
     {
         cout << m_Name << " loses.\n";
     }
-
-    // announces that the player pushes
     void Push() const
     {
         cout << m_Name << " pushes.\n";
@@ -183,14 +178,12 @@ public:
 
     virtual ~House() {}
 
-    // indicates whether house is hitting - will always hit on 16 or less
     virtual bool IsHitting() const
     {
         return GetTotal() <= 16;
     }
 
-    // flips over first card
-    void FlipFirstCard()
+    void FlipFirstCard() // 翻转第一张牌
     {
         if (!m_Cards.empty())
             m_Cards[0]->Flip();
@@ -210,24 +203,24 @@ public:
 
     virtual ~Deck() {}
 
-    // create a standard deck of 52 cards
-    void Populate()
+    void Populate() // 生成标准52张牌
     {
         Clear();
-        // create standard deck
         for (int s = Card::CLUBS; s <= Card::SPADES; ++s)
             for (int r = Card::ACE; r <= Card::KING; ++r)
                 Add(new Card(static_cast<Card::rank>(r), static_cast<Card::suit>(s)));
     }
 
-    // shuffle cards
-    void Shuffle()
+    void Shuffle() // 乱序
     {
-        random_shuffle(m_Cards.begin(), m_Cards.end());
+        // random_device rd;
+        // shuffle(m_Cards.begin(), m_Cards.end(), default_random_engine(rd()));//非确定性随机整数作为随机种子
+
+        unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+        shuffle(m_Cards.begin(), m_Cards.end(), default_random_engine(seed)); // 时间作为随机种子
     }
 
-    // deal one card to a hand
-    void Deal(Hand &aHand)
+    void Deal(Hand &aHand) // 分发一张牌给手牌
     {
         if (!m_Cards.empty())
         {
@@ -240,12 +233,11 @@ public:
         }
     }
 
-    // give additional cards to a generic player
-    void AdditionalCards(GenericPlayer &aGenericPlayer)
+    void AdditionalCards(GenericPlayer &aGenericPlayer) // 给通用玩家发牌
     {
         cout << endl;
-        // continue to deal a card as long as generic player isn't busted and
-        // wants another hit
+
+        // 只要通用玩家未超过21点，且想要牌
         while (!(aGenericPlayer.IsBusted()) && aGenericPlayer.IsHitting())
         {
             Deal(aGenericPlayer);
@@ -262,60 +254,51 @@ class Game // 游戏
 public:
     Game(const vector<string> &names)
     {
-        // create a vector of players from a vector of names
         for (vector<string>::const_iterator pName = names.begin(); pName != names.end(); ++pName)
-            m_Players.push_back(Player(*pName));
-
-        // seed the random number generator
-        srand(static_cast<unsigned int>(time(0)));
-        m_Deck.Populate();
-        m_Deck.Shuffle();
+            m_Players.push_back(Player(*pName)); // 添加人类玩家
     }
 
     ~Game() {}
 
-    // plays the game of blackjack
     void Play()
     {
-        // deal initial 2 cards to everyone
+        srand(static_cast<unsigned int>(time(0))); // 随机种子
+        m_Deck.Populate();                         // 生成牌
+        m_Deck.Shuffle();                          // 洗牌
+
         vector<Player>::iterator pPlayer;
-        for (int i = 0; i < 2; ++i)
+        for (int i = 0; i < 2; ++i) // 所有玩家发两张牌
         {
             for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
                 m_Deck.Deal(*pPlayer);
             m_Deck.Deal(m_House);
         }
 
-        // hide house's first card
-        m_House.FlipFirstCard();
+        m_House.FlipFirstCard(); // 计算机第一张牌朝下隐藏
 
-        // display everyone's hand
+        // 显示所有玩家手牌
         for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
             cout << *pPlayer << endl;
         cout << m_House << endl;
+        cout << endl;
 
-        // deal additional cards to players
         for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
-            m_Deck.AdditionalCards(*pPlayer);
+            m_Deck.AdditionalCards(*pPlayer); // 给每一位玩家发牌
 
-        // reveal house's first card
-        m_House.FlipFirstCard();
-        cout << endl
-             << m_House;
+        m_House.FlipFirstCard(); // 计算机第一张牌朝上显示
+        cout << m_House;
 
-        // deal additional cards to house
-        m_Deck.AdditionalCards(m_House);
+        m_Deck.AdditionalCards(m_House); // 给计算机发牌
 
-        if (m_House.IsBusted())
+        if (m_House.IsBusted()) // 计算机超过21点
         {
-            // everyone still playing wins
             for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
                 if (!(pPlayer->IsBusted()))
                     pPlayer->Win();
         }
         else
         {
-            // compare each player still playing to house
+            // 比较玩家与庄家的点数
             for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
                 if (!pPlayer->IsBusted())
                     if (pPlayer->GetTotal() > m_House.GetTotal())
@@ -326,7 +309,7 @@ public:
                         pPlayer->Push();
         }
 
-        // remove everyone's cards
+        // 移除所有玩家的牌
         for (pPlayer = m_Players.begin(); pPlayer != m_Players.end(); ++pPlayer)
             pPlayer->Clear();
         m_House.Clear();
@@ -357,9 +340,7 @@ ostream &operator<<(ostream &os, const GenericPlayer &aGenericPlayer)
 
     if (!aGenericPlayer.m_Cards.empty())
     {
-        for (vector<Card *>::const_iterator pCard = aGenericPlayer.m_Cards.begin();
-             pCard != aGenericPlayer.m_Cards.end();
-             ++pCard)
+        for (vector<Card *>::const_iterator pCard = aGenericPlayer.m_Cards.begin(); pCard != aGenericPlayer.m_Cards.end(); ++pCard)
             os << *(*pCard) << "\t";
 
         if (aGenericPlayer.GetTotal() != 0)
@@ -392,7 +373,7 @@ int main()
     }
     cout << endl;
 
-    // the game loop
+    // 游戏循环
     Game aGame(names);
     char again = 'y';
     while (again != 'n' && again != 'N')
